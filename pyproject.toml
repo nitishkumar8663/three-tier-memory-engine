@@ -1,0 +1,12 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "mem3"
+version = "0.1.0"
+description = "3-tier memory engine: working scratchpad, episodic session compression, semantic recall adapter with TTL eviction"
+requires-python = ">=3.11"
+
+[tool.setuptools.packages.find]
+include = ["mem3*"]

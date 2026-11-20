@@ -1,0 +1,42 @@
+=== 3-Tier Memory Engine: live demo ===
+data dir: demo/data (relative to project root) (engine's own; live memory store untouched)
+
+[tier 3] common memory service (127.0.0.1:18792) up: False
+
+--- Tier 1: working scratchpad ---
+scratchpad 'sprint-planning' launch-date: 'Launch is 2026-12-01'
+scratchpad 'other-session' launch-date: "Other session's own value"
+-> sessions isolated: same key, different values. OK
+
+--- Tier 2: episodic session compression ---
+other session ended too (its fact compresses separately).
+session 'sprint-planning' ended; scratchpad cleared: True
+episodic record: session=sprint-planning source_items=6 dropped=2
+  decisions: ['Decided: SQLite for the prototype, Postgres later']
+  facts:     ['Launch is 2026-12-01', 'p95 must stay under 200ms', 'Ravi agreed to own the migration']
+  outcomes:  []
+-> chatter ('lol ok', 'thanks!') dropped; decision + facts kept. OK
+
+recall by keyword 'launch' (later, no live session):
+  [episodic] score=0.7 :: Decided: SQLite for the prototype, Postgres later; Launch is 2026-12-01; p95 must stay under 200ms; 
+-> episodic summary recalled by keyword. OK
+
+--- TTL eviction ---
+episodic records before sweep: 4
+waiting 1.5s for the short-TTL record to expire...
+sweeper evicted 1 record(s):
+  [episodic] short-lived: episodic record expired (expires_at=1795196592.0064669); 1 key points evicted
+episodic records after sweep: 3 (kept: ['other-session', 'sprint-planning', 'long-lived'])
+-> expired evicted + logged; live record kept. OK
+eviction log entries: 1
+
+--- Tier 3: semantic adapter ---
+adapter source: local-fallback
+  [local-fallback] score=1.0 :: Spark memory service: The Spark memory service stores PARA notes with bge-m3 embeddings.
+-> service down, local keyword fallback engaged. OK
+
+--- Unified recall ordering ---
+recall('launch') tier order: ['scratchpad', 'episodic']
+-> scratchpad first, then episodic, then semantic. OK
+
+=== demo complete: all checks observed live ===
