@@ -5,8 +5,6 @@ in progress, compressed episodic summaries of finished sessions, and
 semantic recall, with automated TTL eviction across the tiers.
 Stdlib-only Python, no models, no cloud.
 
-One of Suraj Sharma's 12 agentic-AI projects.
-
 ## The three tiers
 
 | Tier | What it is | Lifetime |
